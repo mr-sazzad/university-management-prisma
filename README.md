@@ -62,16 +62,18 @@ import { Server } from 'http';
 import mongoose from 'mongoose';
 import app from './app';
 
-const port = process.env.PORT || 3000; // Provide a default port if not set
+const port = process.env.PORT || 4001;
 
 let server: Server | null = null;
 
+process.on('uncaughtException', error => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
 const connectToDatabase = async () => {
   try {
-    await mongoose.connect(process.env.DATABASE_URL as string, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.DATABASE_URL as string);
     console.log('🛢️ Database connected successfully!');
   } catch (error) {
     console.error('😭 Failed to connect to the database', error);
@@ -112,6 +114,13 @@ process.on('SIGINT', () => {
   handleServerShutdown();
 });
 
+process.on('SIGTERM', () => {
+  console.log(
+    'Received termination signal (SIGTERM). Closing server gracefully...',
+  );
+  handleServerShutdown();
+});
+
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Promise Rejection:');
   console.error(reason);
@@ -125,6 +134,7 @@ process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection Detected. Closing our server gracefully...');
   handleServerShutdown();
 });
+
 
 ```
 
