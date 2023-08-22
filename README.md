@@ -55,7 +55,7 @@ export default apiError;
 
 
 ```ts
-//server.ts file
+//server.ts 🧩 ⚖️
 
 
 import { Server } from 'http';
@@ -136,6 +136,29 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 
+```
+
+
+```js
+// zod validation.ts 🧩
+
+import { ZodError, ZodIssue } from 'zod';
+
+export const handleZodError = (err: ZodError) => {
+  const errors = err.issues.map((issue: ZodIssue) => {
+    return {
+      path: issue.path,
+      error: issue.message,
+    };
+  });
+
+  const statusCode = 500;
+  return {
+    statusCode,
+    message: 'Zod validation error',
+    errorMessages: errors,
+  };
+};
 ```
 
 
